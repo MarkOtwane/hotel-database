@@ -127,9 +127,6 @@ DELETE FROM guests WHERE (check_in_date - check_out_date) > 30
 --Find guests who booked after a specific date.
 select * from bookings where booking_date > '2024-04-2025' 
 
-
--- 3️⃣ Filtering & Grouping
-
 -- Group bookings by room_id and show average nights stayed.
 SELECT room_id, AVG(night) AS average_nights
 FROM bookings
@@ -157,7 +154,6 @@ INSERT INTO guest_services (guest_id, service_id, date_used) VALUES
 (2, 2, '2025-05-29'),
 (3, 1, '2025-05-28');
 
--- Now let's run the subquery again
 SELECT g.name
 FROM guests g
 WHERE (SELECT COUNT(*) FROM guest_services gs WHERE gs.guest_id = g.id) > 2;
@@ -178,9 +174,9 @@ JOIN
     rooms r ON b.room_id = r.id;
 
 -- Paginate the view to show 3 bookings at a time (using LIMIT and OFFSET).
-SELECT * FROM guest_booking_price LIMIT 3 OFFSET 0; -- First page
-SELECT * FROM guest_booking_price LIMIT 3 OFFSET 3; -- Second page
-SELECT * FROM guest_booking_price LIMIT 3 OFFSET 6; -- Third page
+SELECT * FROM guest_booking_price LIMIT 3 OFFSET 0; 
+SELECT * FROM guest_booking_price LIMIT 3 OFFSET 3; 
+SELECT * FROM guest_booking_price LIMIT 3 OFFSET 6; 
 
 -- 6️⃣ Sorting & Limiting
 
@@ -195,7 +191,6 @@ SELECT * FROM guests ORDER BY check_in_date DESC LIMIT 5;
 -- Add a UNIQUE constraint on email in guests.
 ALTER TABLE guests ADD COLUMN email VARCHAR(100) UNIQUE;
 
--- Let's add some emails to our existing guests
 UPDATE guests SET email = 'john.doe@example.com' WHERE id = 1;
 UPDATE guests SET email = 'jane.smith@example.com' WHERE id = 2;
 UPDATE guests SET email = 'peter.jones@example.com' WHERE id = 3;
@@ -260,11 +255,9 @@ SELECT g.name
 FROM guests g
 WHERE EXISTS (SELECT 1 FROM guest_services gs JOIN services s ON gs.service_id = s.id WHERE gs.guest_id = g.id AND s.name = 'Spa Access');
 
--- Let's ensure some guests have used the spa service
 INSERT INTO guest_services (guest_id, service_id, date_used)
 SELECT (SELECT id FROM guests WHERE name = 'Jane Smith'), (SELECT id FROM services WHERE name = 'Spa Access'), '2025-05-29';
 
--- Run the UNION query again
 SELECT g.name AS customer
 FROM guests g
 WHERE EXISTS (SELECT 1 FROM bookings b WHERE b.guest_id = g.id)
@@ -299,7 +292,6 @@ AFTER UPDATE ON rooms
 FOR EACH ROW
 EXECUTE FUNCTION log_room_availability_change();
 
--- Example of updating room availability to see the trigger in action
 UPDATE rooms SET is_available = FALSE WHERE room_number = 101;
 SELECT * FROM room_availability_logs;
 UPDATE rooms SET is_available = TRUE WHERE room_number = 101;
@@ -332,11 +324,10 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Example of using the function
 SELECT name, calculate_guest_total_spend(guests.id) AS total_spend
 FROM guests;
 
--- Create a stored procedure to add a booking
+-- Create a stored procedure to add a bookins
 CREATE OR REPLACE PROCEDURE add_new_booking(
     p_guest_id INT,
     p_room_id INT,
